@@ -16,15 +16,9 @@ run_black:
 run_isort:
 	isort .
 
-run_pylint:
-	pylint .
-
 run_mypy:
 	mypy .
 
-cc:
-	run_black
-	run_isort
-	run_pylint
+cc: run_isort run_black run_mypy
 
 .PHONY: run

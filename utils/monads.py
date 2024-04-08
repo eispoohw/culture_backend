@@ -1,6 +1,6 @@
-from typing import Generic, Any, TypeVar
+from typing import Any, Generic, TypeVar
 
-_T = TypeVar('_T')
+_T = TypeVar("_T")
 
 
 class Maybe(Generic[_T]):

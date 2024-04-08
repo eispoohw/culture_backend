@@ -1,7 +1,6 @@
 from django.contrib import admin
-from shop.db.models import product
-from shop.db.models import product_unit
-from shop.db.models import order
+
+from shop.db.models import order, product, product_unit
 
 admin.site.register(product.Product)
 admin.site.register(product.ProductMaterials)
