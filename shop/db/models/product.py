@@ -6,7 +6,7 @@ from django.utils.html import format_html
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 
-from shop.db.models.base import get_slug_kwargs, get_title_kwargs
+from shop.db.models._base import get_slug_kwargs, get_title_kwargs
 
 
 class Material(models.Model):

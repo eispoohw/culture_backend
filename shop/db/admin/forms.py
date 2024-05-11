@@ -1,7 +1,7 @@
 from django import forms
 from django.core.exceptions import ValidationError
 
-from shop.db.models import product
+from shop.db.models import product, product_unit
 
 
 class ProductMaterialsForm(forms.ModelForm):
@@ -20,4 +20,14 @@ class ProductMaterialsForm(forms.ModelForm):
                 ),
             )
             return False
-        super().is_valid()
+        return super().is_valid()
+
+
+class SizeForm(forms.ModelForm):
+    class Meta:
+        model = product_unit.Size
+        fields = "__all__"
+
+    product_category = forms.ModelChoiceField(
+        queryset=product.ProductCategory.objects.filter(parent_category__isnull=True), required=False, label="Категория товара"
+    )
