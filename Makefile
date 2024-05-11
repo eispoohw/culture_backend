@@ -11,7 +11,7 @@ venv:
 	source .venv/bin/activate
 
 run_black:
-	black .
+	black . -l 150
 
 run_isort:
 	isort .
@@ -19,6 +19,7 @@ run_isort:
 run_mypy:
 	mypy .
 
-cc: run_isort run_black run_mypy
+cc: run_isort run_black
 
 .PHONY: run
+

@@ -8,9 +8,7 @@ from shop.db.models.product import Product, ProductCategory
 class Size(models.Model):
     """Размер единицы товара."""
 
-    title = models.CharField(
-        max_length=128, null=False, blank=False, unique=True, help_text="Название"
-    )
+    title = models.CharField(max_length=128, null=False, blank=False, unique=True, help_text="Название")
     slug = models.CharField(
         max_length=128,
         unique=True,
@@ -43,9 +41,7 @@ class Size(models.Model):
 class ProductUnit(models.Model):
     """Единица товара."""
 
-    title = models.CharField(
-        max_length=128, null=False, blank=False, unique=True, help_text="Название"
-    )
+    title = models.CharField(max_length=128, null=False, blank=False, unique=True, help_text="Название")
     price = models.CharField(
         max_length=128,
         null=False,
@@ -59,9 +55,7 @@ class ProductUnit(models.Model):
         on_delete=models.CASCADE,
         help_text="Размер единицы товара",
     )
-    product = models.ForeignKey(
-        Product, related_name="product_units", on_delete=models.CASCADE
-    )
+    product = models.ForeignKey(Product, related_name="product_units", on_delete=models.CASCADE)
     reserved = models.BooleanField(default=False, null=False, help_text="Наличие брони")
 
     created_at = models.DateTimeField(auto_now_add=True, help_text="Дата создания")

@@ -30,9 +30,7 @@ class ItemQuantity(models.Model):
 
 
 class RenderedCartItem(models.Model):
-    description = models.CharField(
-        max_length=2048, null=True, blank=True, help_text="Описание товара"
-    )
+    description = models.CharField(max_length=2048, null=True, blank=True, help_text="Описание товара")
     discountedUnitPrice = models.CharField(
         null=True,
         blank=True,
@@ -43,8 +41,7 @@ class RenderedCartItem(models.Model):
         max_length=2048,
         null=False,
         blank=False,
-        help_text="Id товара в системе продавца. "
-        "В параметрах запроса каждый идентификатор товара productId должен быть уникальным",
+        help_text="Id товара в системе продавца." "В параметрах запроса каждый идентификатор товара productId должен быть уникальным",
     )
     quantity = models.OneToOneField(
         ItemQuantity,
@@ -58,9 +55,7 @@ class RenderedCartItem(models.Model):
         validators=[DecimalValidator],
         help_text="Суммарная цена за позицию без учета скидок",
     )
-    title = models.CharField(
-        max_length=2048, null=False, blank=False, help_text="Наименование товара"
-    )
+    title = models.CharField(max_length=2048, null=False, blank=False, help_text="Наименование товара")
     total = models.CharField(
         null=False,
         blank=False,
@@ -83,8 +78,6 @@ class CartTotal(models.Model):
 
 
 class RenderedCart(models.Model):
-    externalId = models.UUIDField(
-        max_length=2048, help_text="Переданный продавцом идентификатор корзины"
-    )
+    externalId = models.UUIDField(max_length=2048, help_text="Переданный продавцом идентификатор корзины")
     items = ArrayField(RenderedCartItem, null=False, blank=False)
     total = models.OneToOneField(CartTotal, on_delete=models.CASCADE)
