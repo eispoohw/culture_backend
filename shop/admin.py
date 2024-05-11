@@ -16,5 +16,5 @@ admin.site.register(product_unit.ProductUnit, product_unit_admin.ProductUnitAdmi
 admin.site.register(product_unit.Size, product_unit_admin.SizeAdmin)
 
 admin.site.register(order.Cart, order_admin.CartAdmin)
-admin.site.register(order.ProductUnitsCart)
-admin.site.register(order.Order)
+admin.site.register(order.ProductUnitsCart, order_admin.ProductUnitCartAdmin)
+admin.site.register(order.Order, order_admin.OrderAdmin)

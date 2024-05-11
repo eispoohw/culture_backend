@@ -14,11 +14,8 @@ class TopLevelCategoryFilter(admin.SimpleListFilter):
         return ((tp.id, tp.title) for tp in top_categories)
 
     def queryset(self, request, queryset):
-        print(self.value())
         if self.value():
             kwargs = {"product_category": int(self.value())}
-            print(kwargs)
-            print(queryset.filter(**kwargs))
             return queryset.filter(**kwargs)
         return queryset.filter()
 
@@ -44,6 +41,8 @@ class ProductUnitAdmin(admin.ModelAdmin):
         "carts_without_order_count",
         "pending_orders_count",
         "confirmed_orders_count",
+        "completed_orders_count",
+        "cancelled_orders_count",
         "created_at",
         "updated_at",
     ]

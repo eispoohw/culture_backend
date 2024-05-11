@@ -1,4 +1,6 @@
 from django.core.validators import RegexValidator
+from django.db import models
+from django.utils.translation import gettext_lazy as _
 
 
 def get_slug_kwargs(editable=True) -> dict:
@@ -27,3 +29,26 @@ def get_title_kwargs(is_unique=True) -> dict:
         "unique": is_unique,
         "help_text": "Уникальное название на русском языке",
     }
+
+
+def get_created_at_kwargs() -> dict:
+    return {
+        "verbose_name": "Дата создания",
+        "auto_now_add": True,
+        "editable": False,
+    }
+
+
+def get_updated_at_kwargs() -> dict:
+    return {
+        "verbose_name": "Дата обновления",
+        "auto_now": True,
+    }
+
+
+class OrderStatus(models.TextChoices):
+    CREATED = "создан", _("создан")
+    CONFIRMED = "подтвержден", _("подтвержден")
+    COMPLETED = "выполнен", _("выполнен")
+    CANCELLED = "отменен", _("отменен")
+    # REFUNDED = "возвращен", _("возвращен") for future

@@ -2,7 +2,7 @@ from django.core.validators import MinValueValidator
 from django.db import models
 from django.utils.text import slugify
 
-from shop.db.models._base import get_slug_kwargs, get_title_kwargs
+from shop.db.models._base import OrderStatus, get_created_at_kwargs, get_slug_kwargs, get_title_kwargs, get_updated_at_kwargs
 from shop.db.models.product import Product, ProductCategory
 
 
@@ -44,7 +44,7 @@ class ProductUnit(models.Model):
     product = models.ForeignKey(Product, verbose_name="Продукт", related_name="product_units", on_delete=models.CASCADE)
     size = models.ForeignKey(
         Size,
-        verbose_name="Размеер",
+        verbose_name="Размер",
         related_name="product_units",
         on_delete=models.CASCADE,
         help_text="Размер единицы товара",
@@ -65,8 +65,8 @@ class ProductUnit(models.Model):
         validators=[MinValueValidator(0)],
         help_text="Количество единиц товара в наличии",
     )
-    created_at = models.DateTimeField(verbose_name="Дата создания", auto_now_add=True, help_text="Дата создания")
-    updated_at = models.DateTimeField(verbose_name="Дата обновления", auto_now=True, help_text="Дата обновления")
+    created_at = models.DateTimeField(**get_created_at_kwargs())
+    updated_at = models.DateTimeField(**get_updated_at_kwargs())
 
     def __str__(self):
         return f"{self.product} - {self.size}"
@@ -75,27 +75,33 @@ class ProductUnit(models.Model):
         return self.product_unit_cart.all()
 
     def carts_without_order(self):
-        return self.carts().filter(cart__order__isnull=True)
+        return self.product_unit_cart.filter(cart__order__isnull=True)
 
     def carts_without_order_count(self):
         return sum([obj.count for obj in self.carts_without_order()])
 
     def pending_orders(self):
-        return self.carts().filter(cart__order__confirmed=False)
+        return self.product_unit_cart.filter(cart__order__status=OrderStatus.CREATED)
 
     def pending_orders_count(self):
         return sum([obj.count for obj in self.pending_orders()])
 
     def confirmed_orders(self):
-        return self.carts().filter(cart__order__confirmed=True).filter(cart__order__completed=False)
+        return self.product_unit_cart.filter(cart__order__status=OrderStatus.CONFIRMED)
 
     def confirmed_orders_count(self):
         return sum([obj.count for obj in self.confirmed_orders()])
 
     def completed_orders(self):
-        return self.product_unit_cart.filter(cart__order__completed=True)
+        return self.product_unit_cart.filter(cart__order__status=OrderStatus.COMPLETED)
 
     def completed_orders_count(self):
+        return sum([obj.count for obj in self.completed_orders()])
+
+    def cancelled_orders(self):
+        return self.product_unit_cart.filter(cart__order__status=OrderStatus.CANCELLED)
+
+    def cancelled_orders_count(self):
         return sum([obj.count for obj in self.completed_orders()])
 
     def available(self):
@@ -105,8 +111,9 @@ class ProductUnit(models.Model):
         return self.product.images_field()
 
     carts_without_order_count.short_description = "Еще без заказа"
-    pending_orders_count.short_description = "Ожидают подтверждения"
+    pending_orders_count.short_description = "ТРЕБУЕТСЯ ПОДТВЕРЖДЕНИЕ"
     confirmed_orders_count.short_description = "Ожидают самовывоз"
     completed_orders_count.short_description = "Продано"
-    available.short_description = "Не зарезервировано"
+    cancelled_orders_count.short_description = "Отменено"
+    available.short_description = "Без резерва"
     images.short_description = "Изображения"
