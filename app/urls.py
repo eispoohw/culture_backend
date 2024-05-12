@@ -14,7 +14,7 @@ schema_view = get_schema_view(
         contact=openapi.Contact(email="eispoohw@yandex.ru"),
     ),
     public=True,
-    permission_classes=[permissions.IsAdminUser, ],
+    permission_classes=[permissions.IsAuthenticated, ],
 )
 
 urlpatterns = [
