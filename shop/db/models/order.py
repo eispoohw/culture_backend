@@ -7,7 +7,7 @@ from shortuuid.django_fields import ShortUUIDField
 
 from shop.db.models._base import OrderStatus, get_created_at_kwargs, get_updated_at_kwargs
 from shop.db.models.product_unit import ProductUnit
-
+from shop.core.email import OrderEmailSender
 
 class Cart(models.Model):
     """Корзина для заказа"""
@@ -128,11 +128,10 @@ class Order(models.Model):
         super().save(force_insert=False, force_update=False, using=None, update_fields=None)
 
         if current_status != self.status:
-            self._perform_status_update(prev=current_status, new=self.status)
+            self._perform_status_update(new=self.status)
 
-    def _perform_status_update(self, prev, new):
+    def _perform_status_update(self, new):
         if new == OrderStatus.CREATED:
-            pass
-            # OrderEmailSender().send_order_created(email=self.email, cart_html=self.cart_html())
+            OrderEmailSender().send_order_created(order=self)
         elif new == OrderStatus.COMPLETED:
             self.cart.remove_product_units()

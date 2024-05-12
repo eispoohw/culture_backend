@@ -25,7 +25,7 @@ class CartCreateAPIView(ModelViewSet):
     @swagger_auto_schema(responce_body=CountSerializer, responses={200: delete_response})
     def destroy(self, request, *args, **kwargs):
         no_order_carts = Cart.objects.filter(order__isnull=True)
-        old_carts = no_order_carts.filter(created_at__lt=datetime.datetime.utcnow() - datetime.timedelta(days=30))
+        old_carts = no_order_carts.filter(created_at__lt=datetime.datetime.utcnow() - datetime.timedelta(days=3))
 
         response_data = CountSerializer({"count": len(old_carts)}).data
         old_carts.delete()
