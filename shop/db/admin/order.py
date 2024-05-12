@@ -42,8 +42,10 @@ class ProductUnitCartAdmin(admin.ModelAdmin):
 
 
 class OrderAdmin(admin.ModelAdmin):
-    search_fields = ["customer_id", "name", "phone", "email"]
     list_filter = ["status"]
+    search_fields = ["customer_id", "name", "phone", "email"]
+
+    readonly_fields = ["customer_id", "name", "phone", "email", "cart", "cart_html", "cart_total"]
     list_display = ["customer_id", "name", "phone", "email", "cart_html", "cart_total", "status"]
 
     form = forms.OrderForm

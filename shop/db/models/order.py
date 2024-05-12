@@ -48,6 +48,12 @@ class Cart(models.Model):
     def status(self):
         return self.order.get(cart_id=self.id).status
 
+    def remove_product_units(self):
+        for puc in self.product_units():
+            pu = ProductUnit.objects.get(id=puc.product_unit.id)
+            pu.count -= puc.count
+            pu.save()
+
     product_units_html.short_description = "Корзина"
     total.short_description = "Итоговая стоимость"
     status.short_description = "Статус"
@@ -113,4 +119,20 @@ class Order(models.Model):
     cart_total.short_description = "К оплате"
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
-        raise NotImplemented
+        try:
+            order_in_db = Order.objects.get(customer_id=self.customer_id)
+            current_status = order_in_db.status
+        except self.DoesNotExist:
+            current_status = None
+
+        super().save(force_insert=False, force_update=False, using=None, update_fields=None)
+
+        if current_status != self.status:
+            self._perform_status_update(prev=current_status, new=self.status)
+
+    def _perform_status_update(self, prev, new):
+        if new == OrderStatus.CREATED:
+            pass
+            # OrderEmailSender().send_order_created(email=self.email, cart_html=self.cart_html())
+        elif new == OrderStatus.COMPLETED:
+            self.cart.remove_product_units()

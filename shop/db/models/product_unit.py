@@ -102,7 +102,7 @@ class ProductUnit(models.Model):
         return self.product_unit_cart.filter(cart__order__status=OrderStatus.CANCELLED)
 
     def cancelled_orders_count(self):
-        return sum([obj.count for obj in self.completed_orders()])
+        return sum([obj.count for obj in self.cancelled_orders()])
 
     def available(self):
         return self.count - self.confirmed_orders_count()

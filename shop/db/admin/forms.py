@@ -2,6 +2,7 @@ from django import forms
 from django.core.exceptions import ValidationError
 
 from shop.db.models import order, product, product_unit
+from shop.db.models._base import OrderStatus
 
 
 class ProductMaterialsForm(forms.ModelForm):
@@ -38,8 +39,37 @@ class OrderForm(forms.ModelForm):
         model = order.Order
         fields = "__all__"
 
-    customer_id = forms.CharField(disabled=True, required=False, label="Идентификатор заказа")
-    name = forms.CharField(disabled=True, required=False, label="Имя заказчика")
-    phone = forms.CharField(disabled=True, required=False, label="Номер телефона заказчика")
-    email = forms.EmailField(disabled=True, required=False, label="Электронная почта заказчика")
-    cart = forms.ModelChoiceField(queryset=order.Cart.objects.all(), disabled=True, required=False, label="Идентификатор корзины")
+    def __init__(self, *args, **kwargs):
+        super(OrderForm, self).__init__(*args, **kwargs)
+        order = kwargs.get("instance")
+        if order is None:
+            return
+
+        match order.status:
+            case OrderStatus.CREATED:
+                field_kwargs = {
+                    "choices": (
+                        (OrderStatus.CREATED, OrderStatus.CREATED),
+                        (OrderStatus.CONFIRMED, OrderStatus.CONFIRMED),
+                        (OrderStatus.CANCELLED, OrderStatus.CANCELLED),
+                    ),
+                    "disabled": False,
+                }
+            case OrderStatus.CONFIRMED:
+                field_kwargs = {
+                    "choices": (
+                        (OrderStatus.CONFIRMED, OrderStatus.CONFIRMED),
+                        (OrderStatus.CANCELLED, OrderStatus.CANCELLED),
+                        (OrderStatus.COMPLETED, OrderStatus.COMPLETED),
+                    ),
+                    "disabled": False,
+                }
+            case OrderStatus.COMPLETED:
+                field_kwargs = {"choices": ((OrderStatus.COMPLETED, OrderStatus.COMPLETED),), "disabled": True}
+            case OrderStatus.CANCELLED:
+                field_kwargs = {"choices": ((OrderStatus.CANCELLED, OrderStatus.CANCELLED),), "disabled": True}
+            case _:
+                field_kwargs = {"choices": OrderStatus, "disabled": False}
+
+        self.fields["status"] = forms.ChoiceField(**field_kwargs)
+        self.fields["status"].value = kwargs.get("instance").status
