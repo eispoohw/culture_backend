@@ -152,3 +152,5 @@ CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_DOMAIN = ".culturetesting.online"
 CSRF_TRUSTED_ORIGINS = ["https://api.culturetesting.online"]
+
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
