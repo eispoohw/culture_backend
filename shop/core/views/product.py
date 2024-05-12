@@ -2,8 +2,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics
 
 import shop.core.filters as filters
-from shop.core.serializers.product import ColorSerializer, MaterialSerializer, ProductCategoryWithHierarchySerializer, \
-    ProductSerializer
+from shop.core.serializers.product import ColorSerializer, MaterialSerializer, ProductCategoryWithHierarchySerializer, ProductSerializer
 from shop.db.models.product import Color, Material, Product, ProductCategory
 
 

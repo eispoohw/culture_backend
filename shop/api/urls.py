@@ -8,5 +8,9 @@ urlpatterns = [
     path("colors", product.ColorView.as_view()),
     path("products", product.ProductView.as_view()),
     path("products/<str:slug>", product.ProductPageView.as_view(lookup_field="slug")),
-    path("cart", order.CartCreateAPIView.as_view({"post": "create", "delete": "destroy"})),
+    path("cart", order.CartAPIView.as_view({"post": "create", "delete": "destroy"})),
+    path("cart/<str:uuid>/add/<int:id>", order.CartAPIView.as_view({"get": "add"})),
+    path("cart/<str:uuid>/remove/<int:id>", order.CartAPIView.as_view({"get": "remove"})),
+    path("cart/<str:uuid>", order.DetailedCartView.as_view()),
+    path("order", order.OrderCreateView.as_view()),
 ]

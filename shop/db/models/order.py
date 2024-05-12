@@ -5,9 +5,10 @@ from django.db import models
 from django.utils.html import format_html
 from shortuuid.django_fields import ShortUUIDField
 
+from shop.core.email import OrderEmailSender
 from shop.db.models._base import OrderStatus, get_created_at_kwargs, get_updated_at_kwargs
 from shop.db.models.product_unit import ProductUnit
-from shop.core.email import OrderEmailSender
+
 
 class Cart(models.Model):
     """Корзина для заказа"""
@@ -46,7 +47,7 @@ class Cart(models.Model):
         return total
 
     def status(self):
-        return self.order.get(cart_id=self.id).status
+        return self.order.status
 
     def remove_product_units(self):
         for puc in self.product_units():
@@ -99,7 +100,7 @@ class Order(models.Model):
         verbose_name="Номер телефона заказчика",
     )
     email = models.EmailField(verbose_name="Электронная почта заказчика", null=False)
-    cart = models.ForeignKey(Cart, verbose_name="Корзина", related_name="order", on_delete=models.CASCADE)
+    cart = models.OneToOneField(Cart, verbose_name="Корзина", related_name="order", on_delete=models.CASCADE)
 
     status = models.CharField(verbose_name="Статус", choices=OrderStatus, default=OrderStatus.CREATED, help_text="Статус заказа")
 

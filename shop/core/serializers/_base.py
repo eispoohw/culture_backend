@@ -7,3 +7,7 @@ class UUIDSerializer(serializers.Serializer):
 
 class CountSerializer(serializers.Serializer):
     count = serializers.IntegerField(required=True)
+
+
+class ErrorSerializer(serializers.Serializer):
+    error = serializers.CharField(required=True)

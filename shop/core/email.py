@@ -1,10 +1,9 @@
 import os
 
-from django.core.mail import send_mail
+from django.core.mail import EmailMessage, send_mail
+from django.template.loader import render_to_string
 
 import app.settings as settings
-from django.core.mail import EmailMessage
-from django.template.loader import render_to_string
 
 
 class OrderEmailSender:
@@ -12,11 +11,11 @@ class OrderEmailSender:
     def send_order_created(self, order):
         self._send(
             subject="Заказ успешно оформлен",
-            message=f"Вы оформили заказ на сайте неформатного магазина \"Культура\"\n"
-                    f"НОМЕР ЗАКАЗА: {order.customer_id}\n"
-                    f"К оплате: {order.cart_total()}",
-            html_message=render_to_string('shop/order_created.html', {'order': order}),
-            email=order.email
+            message=f'Вы оформили заказ на сайте неформатного магазина "Культура"\n'
+            f"НОМЕР ЗАКАЗА: {order.customer_id}\n"
+            f"К оплате: {order.cart_total()}",
+            html_message=render_to_string("shop/order_created.html", {"order": order}),
+            email=order.email,
         )
 
     def _send(self, subject, message, html_message, email):

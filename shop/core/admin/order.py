@@ -48,3 +48,6 @@ class OrderAdmin(admin.ModelAdmin):
     list_display = ["customer_id", "name", "phone", "email", "cart_html", "cart_total", "status"]
 
     form = forms.OrderForm
+
+    def has_add_permission(self, request):
+        return False
