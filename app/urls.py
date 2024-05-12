@@ -13,8 +13,8 @@ schema_view = get_schema_view(
         description="",
         contact=openapi.Contact(email="eispoohw@yandex.ru"),
     ),
-    public=True,
-    permission_classes=[permissions.IsAuthenticated, ],
+    public=False,
+    permission_classes=[permissions.AllowAny, ],
 )
 
 urlpatterns = [
