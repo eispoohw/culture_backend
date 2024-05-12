@@ -1,9 +1,8 @@
 from django.contrib import admin
-from django.db.models import Count
 from django.utils.translation import gettext_lazy as _
 
-from shop.db.admin import forms
-from shop.db.models.order import Cart, OrderStatus
+from shop.core.admin import forms
+from shop.db.models.order import OrderStatus
 
 
 class OrderStatusFilter(admin.SimpleListFilter):

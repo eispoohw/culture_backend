@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.db.models import Count
 
-from shop.db.admin import forms
+from shop.core.admin import forms
 
 
 class MaterialAdmin(admin.ModelAdmin):

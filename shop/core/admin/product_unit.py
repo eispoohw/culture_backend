@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 
-from shop.db.admin import forms
+from shop.core.admin import forms
 from shop.db.models.product import ProductCategory
 
 
