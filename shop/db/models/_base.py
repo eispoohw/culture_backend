@@ -52,3 +52,9 @@ class OrderStatus(models.TextChoices):
     COMPLETED = "выполнен", _("выполнен")
     CANCELLED = "отменен", _("отменен")
     # REFUNDED = "возвращен", _("возвращен") for future
+
+
+class Sex(models.TextChoices):
+    MEN = "М", _("мужчины")
+    WOMAN = "Ж", _("женщины")
+    UNISEX = "У", _("унисекс")

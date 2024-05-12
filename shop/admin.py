@@ -1,8 +1,8 @@
 from django.contrib import admin
 
-from shop.db.admin import order as order_admin
-from shop.db.admin import product as product_admin
-from shop.db.admin import product_unit as product_unit_admin
+from shop.core.admin import order as order_admin
+from shop.core.admin import product as product_admin
+from shop.core.admin import product_unit as product_unit_admin
 from shop.db.models import order, product, product_unit
 
 admin.site.register(product.Material, product_admin.MaterialAdmin)

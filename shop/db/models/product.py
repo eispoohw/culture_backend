@@ -2,11 +2,11 @@ from colorfield.fields import ColorField
 from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
+from django.db.models import Sum
 from django.utils.html import format_html
 from django.utils.text import slugify
-from django.utils.translation import gettext_lazy as _
 
-from shop.db.models._base import get_slug_kwargs, get_title_kwargs
+from shop.db.models._base import Sex, get_slug_kwargs, get_title_kwargs
 
 
 class Material(models.Model):
@@ -51,20 +51,24 @@ class ProductCategory(models.Model):
         "self",
         verbose_name="Родительская категория",
         null=True,
-        blank=True,
+        blank=False,
         related_name="children",
         on_delete=models.CASCADE,
         help_text="Название родительской категории для текущей категории. Может быть пустым",
     )
 
-    def __str__(self):
-        categories = [self.title]
+    def all_categories(self) -> list:
+        categories = [self]
         parent = self.parent_category
-
         while parent:
-            categories.append(parent.title)
+            categories.append(parent)
             parent = parent.parent_category
 
+        categories.sort(key=lambda obj: obj.category_level)
+        return categories
+
+    def __str__(self):
+        categories = [obj.title for obj in self.all_categories()]
         return " - ".join(categories[::-1])
 
     def save(self, *args, **kwargs):
@@ -117,11 +121,6 @@ class Product(models.Model):
         verbose_name = "Товар"
         verbose_name_plural = "Товары"
 
-    class Sex(models.TextChoices):
-        MEN = "М", _("мужчины")
-        WOMAN = "Ж", _("женщины")
-        UNISEX = "У", _("унисекс")
-
     title = models.CharField(**get_title_kwargs(is_unique=False))
     slug = models.CharField(**get_slug_kwargs(editable=False))
 
@@ -132,7 +131,6 @@ class Product(models.Model):
         verbose_name="Описание товара", null=True, blank=True, help_text="Описание товара для отображения на сайте , может быть пустым"
     )
     sex = models.CharField(verbose_name="Пол", max_length=1, choices=Sex, default=Sex.UNISEX, help_text="Для какого пола предназначен товар")
-
     materials = models.ManyToManyField(
         Material,
         verbose_name="Материалы",
@@ -171,6 +169,9 @@ class Product(models.Model):
         for obj in self.images.all():
             html_images.append(obj.image_html_field())
         return format_html("".join(html_images))
+
+    def total_count(self):
+        return self.product_units.aggregate(Sum("count"))["count__sum"]
 
     colors_field.short_description = "Цвета"
     materials_percentage.short_description = "Материалы"

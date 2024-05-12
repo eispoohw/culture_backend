@@ -1,23 +1,25 @@
 from rest_framework import serializers
 
+from shop.core.serializers.product_unit import ProductUnitSerializer
+from shop.db.models._base import Sex
 from shop.db.models.product import *
 
 
 class MaterialSerializer(serializers.ModelSerializer):
     class Meta:
         model = Material
-        fields = '__all__'
+        fields = "__all__"
 
 
 class ProductCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductCategory
-        fields = '__all__'
+        fields = "__all__"
 
 
 class ProductCategoryWithHierarchySerializer(serializers.ModelSerializer):
-    hierarchy = serializers.SerializerMethodField('get_hierarchy')
-    hierarchy_list = serializers.SerializerMethodField('get_hierarchy_list')
+    hierarchy = serializers.SerializerMethodField("get_hierarchy")
+    hierarchy_list = serializers.SerializerMethodField("get_hierarchy_list")
 
     @staticmethod
     def get_hierarchy(product_category):
@@ -33,7 +35,7 @@ class ProductCategoryWithHierarchySerializer(serializers.ModelSerializer):
 
 
 class ColorSerializer(serializers.ModelSerializer):
-    colored_box = serializers.SerializerMethodField('get_colored_box')
+    colored_box = serializers.SerializerMethodField("get_colored_box")
 
     @staticmethod
     def get_colored_box(color):
@@ -47,7 +49,7 @@ class ColorSerializer(serializers.ModelSerializer):
 class ProductImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductImage
-        fields = '__all__'
+        fields = "__all__"
 
 
 class ProductMaterialsSerializer(serializers.ModelSerializer):
@@ -55,7 +57,7 @@ class ProductMaterialsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ProductMaterials
-        fields = ['material', 'percentage']
+        fields = ["material", "percentage"]
 
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -63,7 +65,31 @@ class ProductSerializer(serializers.ModelSerializer):
     colors = ColorSerializer(many=True)
     category = ProductCategoryWithHierarchySerializer()
     images = ProductImageSerializer(many=True)
+    sex_label = serializers.SerializerMethodField("get_sex_label")
+    product_units = ProductUnitSerializer(many=True)
+    total_count = serializers.SerializerMethodField("get_total_count")
+
+    @staticmethod
+    def get_sex_label(product):
+        return Sex(product.sex).label
+
+    @staticmethod
+    def get_total_count(product):
+        return product.total_count()
 
     class Meta:
         model = Product
-        fields = "__all__"
+        fields = [
+            "article",
+            "product_materials",
+            "colors",
+            "category",
+            "images",
+            "sex",
+            "sex_label",
+            "title",
+            "slug",
+            "description",
+            "product_units",
+            "total_count",
+        ]
