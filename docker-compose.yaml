@@ -1,0 +1,17 @@
+version: '3'
+
+services:
+  api:
+    restart: always
+    env_file:
+      - .env
+    build: ./culture_backend/
+    command: >
+      sh -c "python3 manage.py migrate &&
+             python3 manage.py runserver 0.0.0.0:8030
+             "
+    ports:
+      - "8030:8030"
+    container_name: backend
+    networks:
+      - djangonetwork
