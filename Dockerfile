@@ -18,4 +18,4 @@ COPY shop /backend/shop
 
 WORKDIR /backend
 
-EXPOSE 8000
+EXPOSE 8030
