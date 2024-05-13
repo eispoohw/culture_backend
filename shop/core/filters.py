@@ -11,7 +11,7 @@ class RootProductCategoryFilter(django_filters.Filter):
 
 
 class ProductCategoryFilter(django_filters.FilterSet):
-    parent = django_filters.NumberFilter(
+    parent = django_filters.CharFilter(
         field_name="parent_category__slug",
         label="Родительская категория",
     )
