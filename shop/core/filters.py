@@ -11,15 +11,15 @@ class RootProductCategoryFilter(django_filters.Filter):
 
 
 class ProductCategoryFilter(django_filters.FilterSet):
-    parent_id = django_filters.NumberFilter(
-        field_name="parent_category__id",
+    parent = django_filters.NumberFilter(
+        field_name="parent_category__slug",
         label="Родительская категория",
     )
     root = RootProductCategoryFilter()
 
     class Meta:
         model = product.ProductCategory
-        fields = ["parent_id", "root"]
+        fields = ["parent", "root"]
 
 
 class ProductCategoryProductFilter(django_filters.Filter):
