@@ -19,7 +19,7 @@ class ProductCategoryFilter(django_filters.FilterSet):
 
     class Meta:
         model = product.ProductCategory
-        fields = ["parent", "root"]
+        fields = ["parent", "root", "slug"]
 
 
 class ProductCategoryProductFilter(django_filters.Filter):
