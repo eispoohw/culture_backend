@@ -66,7 +66,7 @@ class ProductSerializer(serializers.ModelSerializer):
     category = ProductCategoryWithHierarchySerializer()
     images = ProductImageSerializer(many=True)
     sex_label = serializers.SerializerMethodField("get_sex_label")
-    product_units = ProductUnitSerializer(many=True)
+    product_units = serializers.SerializerMethodField('get_product_units')
     total_count = serializers.SerializerMethodField("get_total_count")
 
     @staticmethod
@@ -76,6 +76,16 @@ class ProductSerializer(serializers.ModelSerializer):
     @staticmethod
     def get_total_count(product):
         return product.total_count()
+
+    @staticmethod
+    def get_product_units(product):
+        available_pu = []
+
+        for pu in product.product_units.all():
+            if pu.count > 0:
+                available_pu.append(pu)
+
+        return ProductUnitSerializer(available_pu, many=True).data
 
     class Meta:
         model = Product
