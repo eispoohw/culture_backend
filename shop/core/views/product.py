@@ -2,7 +2,8 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics
 
 import shop.core.filters as filters
-from shop.core.serializers.product import ColorSerializer, MaterialSerializer, ProductCategoryWithHierarchySerializer, ProductSerializer
+from shop.core.serializers.product import ColorSerializer, MaterialSerializer, ProductCategoryWithHierarchySerializer, \
+    ProductSerializer
 from shop.db.models.product import Color, Material, Product, ProductCategory
 
 
@@ -31,6 +32,19 @@ class ProductView(generics.ListAPIView):
     filterset_class = filters.ProductFilter
     search_fields = ["title", "slug", "article", "description", "colors__title"]
     ordering_fields = ["created_at", "product_units__price"]
+
+    def list(self, request, *args, **kwargs):
+        response = super().list(request, *args, **kwargs)
+        filtered_data = []
+
+        for row in response.data:
+            for pu in row['product_units']:
+                if pu['count'] > 0:
+                    filtered_data.append(row)
+                    break
+
+        response.data = filtered_data
+        return response
 
 
 class ProductPageView(generics.RetrieveAPIView):
