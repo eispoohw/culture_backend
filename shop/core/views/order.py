@@ -37,7 +37,10 @@ class CartAPIView(ModelViewSet):
 
     @swagger_auto_schema(request_body=UUIDSerializer, responce_body=CartSerializer, responses={200: post_response})
     def create(self, request, *args, **kwargs):
-        self._validate_request(request)
+        try:
+            self._validate_request(request)
+        except AssertionError:
+            return Response(403)
         return super().create(request, *args, **kwargs)
 
     @swagger_auto_schema(responce_body=CountSerializer, responses={200: delete_response})
