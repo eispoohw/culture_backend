@@ -8,6 +8,9 @@ from dotenv import load_dotenv
 def main():
     load_dotenv()
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "app.settings")
+
+    assert os.getenv('ADMIN_ROUTE') is not None
+
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:

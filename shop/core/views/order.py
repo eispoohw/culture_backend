@@ -1,4 +1,5 @@
 import datetime
+import os
 
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
@@ -23,8 +24,20 @@ class CartAPIView(ModelViewSet):
     def get_queryset(self):
         return Cart.objects.all()
 
+    @staticmethod
+    def _validate_request(request):
+        req_headers = request.META
+        x_forwarded_for_value = req_headers.get('HTTP_X_FORWARDED_FOR')
+        if x_forwarded_for_value:
+            ip_addr = x_forwarded_for_value.split(',')[-1].strip()
+        else:
+            ip_addr = req_headers.get('REMOTE_ADDR')
+
+        assert ip_addr in os.getenv('ORDER_REQUESTS_PERMITTED_IPS')
+
     @swagger_auto_schema(request_body=UUIDSerializer, responce_body=CartSerializer, responses={200: post_response})
     def create(self, request, *args, **kwargs):
+        self._validate_request(request)
         return super().create(request, *args, **kwargs)
 
     @swagger_auto_schema(responce_body=CountSerializer, responses={200: delete_response})

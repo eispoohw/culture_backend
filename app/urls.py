@@ -1,3 +1,5 @@
+import os
+
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
@@ -18,7 +20,7 @@ schema_view = get_schema_view(
 )
 
 urlpatterns = [
-    path("admin/", admin.site.urls),
+    path(os.getenv('ADMIN_ROUTE'), admin.site.urls),
     path("api/", include("shop.api.urls")),
     path(
         "docs/swagger/",

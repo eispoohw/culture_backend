@@ -11,13 +11,15 @@ class ProductMaterialsForm(forms.ModelForm):
         fields = "__all__"
 
     def is_valid(self):
-        current_sum_of_percents = sum([pm.percentage for pm in product.ProductMaterials.objects.filter(product=self.data.get("product"))])
+        current_sum_of_percents = sum(
+            [pm.percentage for pm in product.ProductMaterials.objects.filter(product=self.data.get("product"))])
         if current_sum_of_percents + int(self.data.get("percentage")) > 100:
             current_percents = product.Product.objects.get(article=self.data.get("product")).materials_percentage()
             self.add_error(
                 "percentage",
                 ValidationError(
-                    "Сумма процентов материалов в товаре должна быть не больше 100." f"Текущее значение для выбранного товара: {current_percents}"
+                    "Сумма процентов материалов в товаре должна быть не больше 100." 
+                    f"Текущее значение для выбранного товара: {current_percents}"
                 ),
             )
             return False
@@ -30,7 +32,8 @@ class SizeForm(forms.ModelForm):
         fields = "__all__"
 
     product_category = forms.ModelChoiceField(
-        queryset=product.ProductCategory.objects.filter(parent_category__isnull=True), required=False, label="Категория товара"
+        queryset=product.ProductCategory.objects.filter(parent_category__isnull=True), required=False,
+        label="Категория товара"
     )
 
 
