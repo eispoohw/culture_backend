@@ -32,8 +32,8 @@ class CartAPIView(ModelViewSet):
             ip_addr = x_forwarded_for_value.split(',')[-1].strip()
         else:
             ip_addr = req_headers.get('REMOTE_ADDR')
-
-        assert ip_addr in os.getenv('ORDER_REQUESTS_PERMITTED_IPS')
+        permitted_ips = os.getenv('ORDER_REQUESTS_PERMITTED_IPS').split(', ')
+        assert ip_addr in permitted_ips
 
     @swagger_auto_schema(request_body=UUIDSerializer, responce_body=CartSerializer, responses={200: post_response})
     def create(self, request, *args, **kwargs):
