@@ -25,26 +25,31 @@ class CartAPIView(ModelViewSet):
         return Cart.objects.all()
 
     @staticmethod
-    def _validate_request(request):
-        req_headers = request.META
-        x_forwarded_for_value = req_headers.get('HTTP_X_FORWARDED_FOR')
-        if x_forwarded_for_value:
-            ip_addr = x_forwarded_for_value.split(',')[-1].strip()
-        else:
-            ip_addr = req_headers.get('REMOTE_ADDR')
-        permitted_ips = os.getenv('ORDER_REQUESTS_PERMITTED_IPS').split(', ')
-        assert ip_addr in permitted_ips
+    def validate_request(func):
+        def inner(*args, **kwargs):
+            try:
+                req_headers = args[1].META
+                x_forwarded_for_value = req_headers.get('HTTP_X_FORWARDED_FOR')
+                if x_forwarded_for_value:
+                    ip_addr = x_forwarded_for_value.split(',')[-1].strip()
+                else:
+                    ip_addr = req_headers.get('REMOTE_ADDR')
+                permitted_ips = os.getenv('ORDER_REQUESTS_PERMITTED_IPS').split(', ')
+                assert ip_addr in permitted_ips
+            except AssertionError:
+                return Response(403)
+            return func(*args, **kwargs)
+
+        return inner
 
     @swagger_auto_schema(request_body=UUIDSerializer, responce_body=CartSerializer, responses={200: post_response})
-    def create(self, request, *args, **kwargs):
-        try:
-            self._validate_request(request)
-        except AssertionError:
-            return Response(403)
-        return super().create(request, *args, **kwargs)
+    @validate_request
+    def create(self, *args, **kwargs):
+        return super().create(*args, **kwargs)
 
     @swagger_auto_schema(responce_body=CountSerializer, responses={200: delete_response})
-    def destroy(self, request, *args, **kwargs):
+    @validate_request
+    def destroy(self, *args, **kwargs):
         no_order_carts = Cart.objects.filter(order__isnull=True)
         old_carts = no_order_carts.filter(created_at__lt=datetime.datetime.utcnow() - datetime.timedelta(days=3))
 
@@ -54,6 +59,7 @@ class CartAPIView(ModelViewSet):
         return Response(status=200, data=response_data)
 
     @swagger_auto_schema(responce_body=DetailedCartSerializer, responses={200: detailed_response, 400: error_response})
+    @validate_request
     def add(self, *args, **kwargs):
         try:
             cart = Cart.objects.get(uuid__exact=kwargs.get("uuid"))
@@ -77,6 +83,7 @@ class CartAPIView(ModelViewSet):
         return Response(status=200, data=DetailedCartSerializer(cart).data)
 
     @swagger_auto_schema(responce_body=DetailedCartSerializer, responses={200: detailed_response, 400: error_response})
+    @validate_request
     def remove(self, *args, **kwargs):
         try:
             cart = Cart.objects.get(uuid__exact=kwargs.get("uuid"))
